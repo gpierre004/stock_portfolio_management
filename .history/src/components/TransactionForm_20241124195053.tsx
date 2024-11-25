@@ -27,13 +27,8 @@ export default function TransactionForm({ onClose, accountId, isModal = false }:
 
   const mutation = useMutation({
     mutationFn: async (data: TransactionFormData) => {
-      const formData = {
-        ...data,
-        accountId,
-        portfolio_id: accountId // Set portfolio_id equal to accountId
-      };
-      console.log('Submitting transaction with data:', formData);
-      const response = await axios.post(ENDPOINTS.TRANSACTIONS, formData);
+      console.log('Submitting transaction with data:', { ...data, accountId });
+      const response = await axios.post(ENDPOINTS.TRANSACTIONS, { ...data, accountId });
       console.log('Transaction response:', response.data);
       return response.data;
     },

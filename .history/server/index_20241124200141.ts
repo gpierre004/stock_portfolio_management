@@ -9,7 +9,6 @@ import logger from './utils/logger';
 
 // Initialize cron jobs
 import './cron/stockPriceUpdateJob';
-import './cron/afterMarketAnalysis';
 
 dotenv.config();
 
@@ -27,14 +26,14 @@ app.use('/api/watchlist', watchlistRoutes);
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-    logger.error(err.stack);
-    res.status(500).json({
-        success: false,
-        error: 'Internal server error'
-    });
+  logger.error(`Server error: ${err.stack}`);
+  res.status(500).json({
+    success: false,
+    error: 'Internal server error'
+  });
 });
 
 app.listen(port, () => {
-    logger.info(`Server running on port ${port}`);
-    logger.info('Stock price update and after-market analysis cron jobs initialized');
+  logger.info(`Server running on port ${port}`);
+  logger.info('Stock price update cron job initialized');
 });

@@ -1,7 +1,9 @@
 import express from 'express';
 import { watchlistController } from '../controllers/watchlistController';
 import { 
-    getWatchList, updateWatchListPrices, cleanupWatchList, refreshWatchList 
+    getWatchList, updateWatchListPrices, 
+    cleanupWatchList,
+    refreshWatchList 
   } from '../services/watchlistService.ts';
   import logger from '../utils/logger.js';
 

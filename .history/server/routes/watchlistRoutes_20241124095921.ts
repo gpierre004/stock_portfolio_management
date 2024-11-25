@@ -2,8 +2,7 @@ import express from 'express';
 import { watchlistController } from '../controllers/watchlistController';
 import { 
     getWatchList, updateWatchListPrices, cleanupWatchList, refreshWatchList 
-  } from '../services/watchlistService.ts';
-  import logger from '../utils/logger.js';
+  } from '../services/watchlistService.ts';import logger from '../utils/logger.js';
 
 import { authenticateToken } from '../middleware/auth';
 
