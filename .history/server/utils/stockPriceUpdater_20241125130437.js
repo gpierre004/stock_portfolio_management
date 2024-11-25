@@ -1,44 +1,29 @@
-import yahooFinance from 'yahoo-finance2';
-import logger from './logger';
-import pool from '../config/database';
+const yahooFinance = require('yahoo-finance2');
+const logger = require('./logger');
+const pool = require('../config/database');
 
 async function updateNullCurrentPrices() {
     try {
-        // Update transactions table
-        const transactionsQuery = `
+        const query = `
             UPDATE transactions t 
             SET current_price = (
                 SELECT close 
                 FROM stock_prices sp 
-                WHERE UPPER(TRIM(sp.ticker)) = UPPER(TRIM(t.ticker))
+                WHERE TRIM(sp.ticker) = TRIM(t.ticker) 
                 ORDER BY date DESC 
                 LIMIT 1
             ) 
             WHERE t.current_price IS NULL;
         `;
-        await pool.query(transactionsQuery);
-
-        // Update watchlists table
-        const watchlistsQuery = `
-            UPDATE watchlists w 
-            SET "currentPrice" = (
-                SELECT close 
-                FROM stock_prices sp 
-                WHERE UPPER(TRIM(sp.ticker)) = UPPER(TRIM(w.ticker))
-                ORDER BY date DESC 
-                LIMIT 1
-            );
-        `;
-        await pool.query(watchlistsQuery);
-        
-        logger.info('Updated null current prices in transactions and watchlists tables');
+        await pool.query(query);
+        logger.info('Updated null current_prices in transactions table');
     } catch (error) {
-        logger.error('Error updating null current prices:', error);
+        logger.error('Error updating null current_prices:', error);
         throw error;
     }
 }
 
-async function updateStockPrices(symbols?: string | string[]) {
+async function updateStockPrices(symbols) {
     try {
         // If no symbols provided, fetch all symbols from the database
         if (!symbols) {
@@ -78,7 +63,7 @@ async function updateStockPrices(symbols?: string | string[]) {
                     `;
                     
                     await pool.query(stockPriceQuery, [
-                        symbol.trim().toUpperCase(),
+                        symbol.trim(),
                         now,
                         quote.regularMarketOpen,
                         quote.regularMarketDayHigh,
@@ -90,30 +75,17 @@ async function updateStockPrices(symbols?: string | string[]) {
                         now  // updatedAt
                     ]);
 
-                    // Update current_price in transactions table with case-insensitive comparison
+                    // Update current_price in transactions table with trimmed ticker comparison
                     const updateTransactionsQuery = `
                         UPDATE transactions 
                         SET current_price = $1, "updatedAt" = $2
-                        WHERE UPPER(TRIM(ticker)) = $3
+                        WHERE TRIM(ticker) = $3
                     `;
 
                     await pool.query(updateTransactionsQuery, [
                         quote.regularMarketPrice,
                         now,
-                        symbol.trim().toUpperCase()
-                    ]);
-
-                    // Update currentPrice in watchlists table with case-insensitive comparison
-                    const updateWatchlistsQuery = `
-                        UPDATE watchlists 
-                        SET "currentPrice" = $1, "updatedAt" = $2
-                        WHERE UPPER(TRIM(ticker)) = $3
-                    `;
-
-                    await pool.query(updateWatchlistsQuery, [
-                        quote.regularMarketPrice,
-                        now,
-                        symbol.trim().toUpperCase()
+                        symbol.trim()
                     ]);
                     
                     logger.info(`Updated price for ${symbol.trim()}: ${quote.regularMarketPrice}`);
@@ -132,12 +104,12 @@ async function updateStockPrices(symbols?: string | string[]) {
     }
 }
 
-async function getHistoricalData(symbol: string, startDate: Date, endDate: Date) {
+async function getHistoricalData(symbol, startDate, endDate) {
     try {
         const queryOptions = {
             period1: startDate,
             period2: endDate,
-            interval: "1d" as "1d" | "1wk" | "1mo"  // Explicitly type as allowed interval
+            interval: '1d'
         };
         
         const result = await yahooFinance.historical(symbol.trim(), queryOptions);
@@ -162,7 +134,7 @@ async function getHistoricalData(symbol: string, startDate: Date, endDate: Date)
             `;
             
             await pool.query(query, [
-                symbol.trim().toUpperCase(),
+                symbol.trim(),
                 data.date,
                 data.open,
                 data.high,
@@ -179,26 +151,13 @@ async function getHistoricalData(symbol: string, startDate: Date, endDate: Date)
                 const updateTransactionsQuery = `
                     UPDATE transactions 
                     SET current_price = $1, "updatedAt" = $2
-                    WHERE UPPER(TRIM(ticker)) = $3
+                    WHERE TRIM(ticker) = $3
                 `;
 
                 await pool.query(updateTransactionsQuery, [
                     data.close,
                     now,
-                    symbol.trim().toUpperCase()
-                ]);
-
-                // Update currentPrice in watchlists table with the latest close price
-                const updateWatchlistsQuery = `
-                    UPDATE watchlists 
-                    SET "currentPrice" = $1, "updatedAt" = $2
-                    WHERE UPPER(TRIM(ticker)) = $3
-                `;
-
-                await pool.query(updateWatchlistsQuery, [
-                    data.close,
-                    now,
-                    symbol.trim().toUpperCase()
+                    symbol.trim()
                 ]);
             }
         }
@@ -213,7 +172,8 @@ async function getHistoricalData(symbol: string, startDate: Date, endDate: Date)
     }
 }
 
-export {
+// Export the functions
+module.exports = {
     updateStockPrices,
     getHistoricalData,
     updateNullCurrentPrices

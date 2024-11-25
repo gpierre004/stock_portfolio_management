@@ -1,44 +1,8 @@
-import yahooFinance from 'yahoo-finance2';
-import logger from './logger';
-import pool from '../config/database';
+const yahooFinance = require('yahoo-finance2');
+const logger = require('./logger');
+const pool = require('../config/database');
 
-async function updateNullCurrentPrices() {
-    try {
-        // Update transactions table
-        const transactionsQuery = `
-            UPDATE transactions t 
-            SET current_price = (
-                SELECT close 
-                FROM stock_prices sp 
-                WHERE UPPER(TRIM(sp.ticker)) = UPPER(TRIM(t.ticker))
-                ORDER BY date DESC 
-                LIMIT 1
-            ) 
-            WHERE t.current_price IS NULL;
-        `;
-        await pool.query(transactionsQuery);
-
-        // Update watchlists table
-        const watchlistsQuery = `
-            UPDATE watchlists w 
-            SET "currentPrice" = (
-                SELECT close 
-                FROM stock_prices sp 
-                WHERE UPPER(TRIM(sp.ticker)) = UPPER(TRIM(w.ticker))
-                ORDER BY date DESC 
-                LIMIT 1
-            );
-        `;
-        await pool.query(watchlistsQuery);
-        
-        logger.info('Updated null current prices in transactions and watchlists tables');
-    } catch (error) {
-        logger.error('Error updating null current prices:', error);
-        throw error;
-    }
-}
-
-async function updateStockPrices(symbols?: string | string[]) {
+async function updateStockPrices(symbols) {
     try {
         // If no symbols provided, fetch all symbols from the database
         if (!symbols) {
@@ -56,7 +20,7 @@ async function updateStockPrices(symbols?: string | string[]) {
 
         for (const symbol of symbols) {
             try {
-                const quote = await yahooFinance.quote(symbol.trim());
+                const quote = await yahooFinance.quote(symbol);
                 
                 if (quote) {
                     const now = new Date();
@@ -78,7 +42,7 @@ async function updateStockPrices(symbols?: string | string[]) {
                     `;
                     
                     await pool.query(stockPriceQuery, [
-                        symbol.trim().toUpperCase(),
+                        symbol,
                         now,
                         quote.regularMarketOpen,
                         quote.regularMarketDayHigh,
@@ -90,57 +54,41 @@ async function updateStockPrices(symbols?: string | string[]) {
                         now  // updatedAt
                     ]);
 
-                    // Update current_price in transactions table with case-insensitive comparison
+                    // Update current_price in transactions table
                     const updateTransactionsQuery = `
                         UPDATE transactions 
                         SET current_price = $1, "updatedAt" = $2
-                        WHERE UPPER(TRIM(ticker)) = $3
+                        WHERE ticker = $3
                     `;
 
                     await pool.query(updateTransactionsQuery, [
                         quote.regularMarketPrice,
                         now,
-                        symbol.trim().toUpperCase()
-                    ]);
-
-                    // Update currentPrice in watchlists table with case-insensitive comparison
-                    const updateWatchlistsQuery = `
-                        UPDATE watchlists 
-                        SET "currentPrice" = $1, "updatedAt" = $2
-                        WHERE UPPER(TRIM(ticker)) = $3
-                    `;
-
-                    await pool.query(updateWatchlistsQuery, [
-                        quote.regularMarketPrice,
-                        now,
-                        symbol.trim().toUpperCase()
+                        symbol
                     ]);
                     
-                    logger.info(`Updated price for ${symbol.trim()}: ${quote.regularMarketPrice}`);
+                    logger.info(`Updated price for ${symbol}: ${quote.regularMarketPrice}`);
                 }
             } catch (error) {
                 logger.error(`Error updating price for symbol ${symbol}:`, error);
                 continue; // Continue with next symbol even if one fails
             }
         }
-
-        // Update any remaining null current_prices
-        await updateNullCurrentPrices();
     } catch (error) {
         logger.error('Error in updateStockPrices:', error);
         throw error;
     }
 }
 
-async function getHistoricalData(symbol: string, startDate: Date, endDate: Date) {
+async function getHistoricalData(symbol, startDate, endDate) {
     try {
         const queryOptions = {
             period1: startDate,
             period2: endDate,
-            interval: "1d" as "1d" | "1wk" | "1mo"  // Explicitly type as allowed interval
+            interval: '1d'
         };
         
-        const result = await yahooFinance.historical(symbol.trim(), queryOptions);
+        const result = await yahooFinance.historical(symbol, queryOptions);
         
         // Store historical data in database
         for (const data of result) {
@@ -162,7 +110,7 @@ async function getHistoricalData(symbol: string, startDate: Date, endDate: Date)
             `;
             
             await pool.query(query, [
-                symbol.trim().toUpperCase(),
+                symbol,
                 data.date,
                 data.open,
                 data.high,
@@ -179,32 +127,16 @@ async function getHistoricalData(symbol: string, startDate: Date, endDate: Date)
                 const updateTransactionsQuery = `
                     UPDATE transactions 
                     SET current_price = $1, "updatedAt" = $2
-                    WHERE UPPER(TRIM(ticker)) = $3
+                    WHERE ticker = $3
                 `;
 
                 await pool.query(updateTransactionsQuery, [
                     data.close,
                     now,
-                    symbol.trim().toUpperCase()
-                ]);
-
-                // Update currentPrice in watchlists table with the latest close price
-                const updateWatchlistsQuery = `
-                    UPDATE watchlists 
-                    SET "currentPrice" = $1, "updatedAt" = $2
-                    WHERE UPPER(TRIM(ticker)) = $3
-                `;
-
-                await pool.query(updateWatchlistsQuery, [
-                    data.close,
-                    now,
-                    symbol.trim().toUpperCase()
+                    symbol
                 ]);
             }
         }
-        
-        // Update any remaining null current_prices
-        await updateNullCurrentPrices();
         
         return result;
     } catch (error) {
@@ -213,8 +145,7 @@ async function getHistoricalData(symbol: string, startDate: Date, endDate: Date)
     }
 }
 
-export {
+module.exports = {
     updateStockPrices,
-    getHistoricalData,
-    updateNullCurrentPrices
+    getHistoricalData
 };

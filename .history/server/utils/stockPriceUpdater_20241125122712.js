@@ -1,27 +1,6 @@
-import yahooFinance from 'yahoo-finance2';
-import logger from './logger.js';
-import pool from '../config/database.js';
-
-async function updateNullCurrentPrices() {
-    try {
-        const query = `
-            UPDATE transactions t 
-            SET current_price = (
-                SELECT close 
-                FROM stock_prices sp 
-                WHERE TRIM(sp.ticker) = TRIM(t.ticker) 
-                ORDER BY date DESC 
-                LIMIT 1
-            ) 
-            WHERE t.current_price IS NULL;
-        `;
-        await pool.query(query);
-        logger.info('Updated null current_prices in transactions table');
-    } catch (error) {
-        logger.error('Error updating null current_prices:', error);
-        throw error;
-    }
-}
+const yahooFinance = require('yahoo-finance2');
+const logger = require('./logger');
+const pool = require('../config/database');
 
 async function updateStockPrices(symbols) {
     try {
@@ -41,12 +20,11 @@ async function updateStockPrices(symbols) {
 
         for (const symbol of symbols) {
             try {
-                const quote = await yahooFinance.quote(symbol.trim());
+                const quote = await yahooFinance.quote(symbol);
                 
                 if (quote) {
                     const now = new Date();
-                    // Update stock_prices table
-                    const stockPriceQuery = `
+                    const query = `
                         INSERT INTO stock_prices (
                             ticker, date, open, high, low, close, volume, "adjustedClose",
                             "createdAt", "updatedAt"
@@ -62,8 +40,8 @@ async function updateStockPrices(symbols) {
                             "updatedAt" = EXCLUDED."updatedAt"
                     `;
                     
-                    await pool.query(stockPriceQuery, [
-                        symbol.trim(),
+                    await pool.query(query, [
+                        symbol,
                         now,
                         quote.regularMarketOpen,
                         quote.regularMarketDayHigh,
@@ -74,30 +52,14 @@ async function updateStockPrices(symbols) {
                         now, // createdAt
                         now  // updatedAt
                     ]);
-
-                    // Update current_price in transactions table with trimmed ticker comparison
-                    const updateTransactionsQuery = `
-                        UPDATE transactions 
-                        SET current_price = $1, "updatedAt" = $2
-                        WHERE TRIM(ticker) = $3
-                    `;
-
-                    await pool.query(updateTransactionsQuery, [
-                        quote.regularMarketPrice,
-                        now,
-                        symbol.trim()
-                    ]);
                     
-                    logger.info(`Updated price for ${symbol.trim()}: ${quote.regularMarketPrice}`);
+                    logger.info(`Updated price for ${symbol}: ${quote.regularMarketPrice}`);
                 }
             } catch (error) {
                 logger.error(`Error updating price for symbol ${symbol}:`, error);
                 continue; // Continue with next symbol even if one fails
             }
         }
-
-        // Update any remaining null current_prices
-        await updateNullCurrentPrices();
     } catch (error) {
         logger.error('Error in updateStockPrices:', error);
         throw error;
@@ -112,7 +74,7 @@ async function getHistoricalData(symbol, startDate, endDate) {
             interval: '1d'
         };
         
-        const result = await yahooFinance.historical(symbol.trim(), queryOptions);
+        const result = await yahooFinance.historical(symbol, queryOptions);
         
         // Store historical data in database
         for (const data of result) {
@@ -134,7 +96,7 @@ async function getHistoricalData(symbol, startDate, endDate) {
             `;
             
             await pool.query(query, [
-                symbol.trim(),
+                symbol,
                 data.date,
                 data.open,
                 data.high,
@@ -145,25 +107,7 @@ async function getHistoricalData(symbol, startDate, endDate) {
                 now, // createdAt
                 now  // updatedAt
             ]);
-
-            // Update current_price in transactions table with the latest close price
-            if (data === result[result.length - 1]) { // Only update with the most recent price
-                const updateTransactionsQuery = `
-                    UPDATE transactions 
-                    SET current_price = $1, "updatedAt" = $2
-                    WHERE TRIM(ticker) = $3
-                `;
-
-                await pool.query(updateTransactionsQuery, [
-                    data.close,
-                    now,
-                    symbol.trim()
-                ]);
-            }
         }
-        
-        // Update any remaining null current_prices
-        await updateNullCurrentPrices();
         
         return result;
     } catch (error) {
@@ -172,9 +116,7 @@ async function getHistoricalData(symbol, startDate, endDate) {
     }
 }
 
-// Export the functions
-export {
+module.exports = {
     updateStockPrices,
-    getHistoricalData,
-    updateNullCurrentPrices
+    getHistoricalData
 };

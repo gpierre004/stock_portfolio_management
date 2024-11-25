@@ -41,7 +41,7 @@
     "recharts": "^2.12.1",
     "sequelize": "^6.37.5",
     "winston": "^3.17.0",
-    "yfinance": "^0.0.6",
+    "yahoo-finance2": "^2.13.2",
     "zod": "^3.22.4"
   },
   "devDependencies": {
