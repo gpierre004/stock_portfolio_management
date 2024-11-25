@@ -2,7 +2,10 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> f16e5c4 (version 1.0.1)
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import Navigation from './components/Navigation';
@@ -12,8 +15,11 @@ import Analysis from './pages/Analysis';
 import Login from './pages/Login';
 import Landing from './pages/Landing';
 <<<<<<< HEAD
+<<<<<<< HEAD
 import Navigation from './components/Navigation';
 =======
+=======
+>>>>>>> f16e5c4 (version 1.0.1)
 import Transactions from './pages/Transactions';
 >>>>>>> f16e5c4 (version 1.0.1)
 import ProtectedRoute from './components/ProtectedRoute';
@@ -26,6 +32,22 @@ const NavigationWrapper = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const publicPaths = ['/', '/login'];
   const showNavigation = !publicPaths.includes(location.pathname);
+<<<<<<< HEAD
+=======
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex">
+      {showNavigation && <Navigation />}
+      <div className={`flex-1 ${!showNavigation ? 'w-full' : ''}`}>
+        {children}
+      </div>
+    </div>
+  );
+};
+
+function App() {
+  const [selectedAccountId, setSelectedAccountId] = React.useState<number | null>(null);
+>>>>>>> f16e5c4 (version 1.0.1)
 
   return (
     <div className="min-h-screen bg-gray-50 flex">

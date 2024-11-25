@@ -3,7 +3,11 @@ const logger = require('./logger');
 const pool = require('../config/database');
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 async function updatestock_prices(symbols) {
+=======
+async function updateStockPrices(symbols) {
+>>>>>>> f16e5c4 (version 1.0.1)
 =======
 async function updateStockPrices(symbols) {
 >>>>>>> f16e5c4 (version 1.0.1)
@@ -59,7 +63,11 @@ async function updateStockPrices(symbols) {
         }
     } catch (error) {
 <<<<<<< HEAD
+<<<<<<< HEAD
         logger.error('Error in updatestock_prices:', error);
+=======
+        logger.error('Error in updateStockPrices:', error);
+>>>>>>> f16e5c4 (version 1.0.1)
 =======
         logger.error('Error in updateStockPrices:', error);
 >>>>>>> f16e5c4 (version 1.0.1)
@@ -114,7 +122,11 @@ async function getHistoricalData(symbol, startDate, endDate) {
 
 module.exports = {
 <<<<<<< HEAD
+<<<<<<< HEAD
     updatestock_prices,
+=======
+    updateStockPrices,
+>>>>>>> f16e5c4 (version 1.0.1)
 =======
     updateStockPrices,
 >>>>>>> f16e5c4 (version 1.0.1)

@@ -39,7 +39,11 @@ async function updateNullCurrentPrices() {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 async function updatestock_prices(symbols?: string | string[]) {
+=======
+async function updateStockPrices(symbols?: string | string[]) {
+>>>>>>> f16e5c4 (version 1.0.1)
 =======
 async function updateStockPrices(symbols?: string | string[]) {
 >>>>>>> f16e5c4 (version 1.0.1)
@@ -132,7 +136,11 @@ async function updateStockPrices(symbols?: string | string[]) {
         await updateNullCurrentPrices();
     } catch (error) {
 <<<<<<< HEAD
+<<<<<<< HEAD
         logger.error('Error in updatestock_prices:', error);
+=======
+        logger.error('Error in updateStockPrices:', error);
+>>>>>>> f16e5c4 (version 1.0.1)
 =======
         logger.error('Error in updateStockPrices:', error);
 >>>>>>> f16e5c4 (version 1.0.1)
@@ -223,7 +231,11 @@ async function getHistoricalData(symbol: string, startDate: Date, endDate: Date)
 
 export {
 <<<<<<< HEAD
+<<<<<<< HEAD
     updatestock_prices,
+=======
+    updateStockPrices,
+>>>>>>> f16e5c4 (version 1.0.1)
 =======
     updateStockPrices,
 >>>>>>> f16e5c4 (version 1.0.1)

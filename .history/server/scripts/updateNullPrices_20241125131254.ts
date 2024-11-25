@@ -1,5 +1,9 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { updatestock_prices } from '../utils/stockPriceUpdater';
+=======
+import { updateStockPrices } from '../utils/stockPriceUpdater';
+>>>>>>> f16e5c4 (version 1.0.1)
 =======
 import { updateStockPrices } from '../utils/stockPriceUpdater';
 >>>>>>> f16e5c4 (version 1.0.1)
@@ -15,7 +19,11 @@ async function main() {
         
         // Update stock prices for these tickers
 <<<<<<< HEAD
+<<<<<<< HEAD
         await updatestock_prices(tickers);
+=======
+        await updateStockPrices(tickers);
+>>>>>>> f16e5c4 (version 1.0.1)
 =======
         await updateStockPrices(tickers);
 >>>>>>> f16e5c4 (version 1.0.1)

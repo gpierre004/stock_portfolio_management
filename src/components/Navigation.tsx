@@ -133,6 +133,9 @@ export default function Navigation() {
               Login
             </Button>
           )}
+<<<<<<< HEAD
+>>>>>>> f16e5c4 (version 1.0.1)
+=======
 >>>>>>> f16e5c4 (version 1.0.1)
         </div>
       </div>

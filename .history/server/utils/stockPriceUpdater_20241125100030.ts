@@ -3,7 +3,11 @@ import logger from './logger';
 import pool from '../config/database';
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 export async function updatestock_prices(symbols: string[]): Promise<void> {
+=======
+export async function updateStockPrices(symbols: string[]): Promise<void> {
+>>>>>>> f16e5c4 (version 1.0.1)
 =======
 export async function updateStockPrices(symbols: string[]): Promise<void> {
 >>>>>>> f16e5c4 (version 1.0.1)
@@ -48,7 +52,11 @@ export async function updateStockPrices(symbols: string[]): Promise<void> {
         }
     } catch (error) {
 <<<<<<< HEAD
+<<<<<<< HEAD
         logger.error('Error in updatestock_prices:', error);
+=======
+        logger.error('Error in updateStockPrices:', error);
+>>>>>>> f16e5c4 (version 1.0.1)
 =======
         logger.error('Error in updateStockPrices:', error);
 >>>>>>> f16e5c4 (version 1.0.1)
