@@ -25,11 +25,14 @@ export const ENDPOINTS = {
   }
 };
 
-// Create axios instance with default config
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    // Add the JWT token if available
+    ...(localStorage.getItem('token') && {
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    })
   }
 });
 
@@ -37,8 +40,8 @@ const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 || error.response?.status === 403) {
-      // Clear token and redirect to login on auth errors
+    if (error.response?.status === 401) {
+      // Handle token expiration - redirect to login or refresh token
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';
@@ -53,6 +56,7 @@ api.interceptors.request.use(
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log('Token added to request:', token); // Debugging line
     }
     return config;
   },

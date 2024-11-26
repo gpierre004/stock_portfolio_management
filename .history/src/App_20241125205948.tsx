@@ -7,7 +7,6 @@ import Login from './pages/Login';
 import Landing from './pages/Landing';
 import Navigation from './components/Navigation';
 import ProtectedRoute from './components/ProtectedRoute';
-import Watchlist from './pages/Watchlist';
 
 const queryClient = new QueryClient();
 
@@ -45,17 +44,6 @@ function App() {
                       selectedAccountId={selectedAccountId}
                       setSelectedAccountId={setSelectedAccountId}
                     />
-                  </>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/watchlist"
-              element={
-                <ProtectedRoute>
-                  <>
-                    <Navigation />
-                    <Watchlist />
                   </>
                 </ProtectedRoute>
               }

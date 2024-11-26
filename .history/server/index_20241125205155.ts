@@ -18,16 +18,8 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3001;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
-
-// Debug middleware for auth headers
-app.use((req, res, next) => {
-  logger.info(`Request path: ${req.path}`);
-  logger.info(`Auth header: ${req.headers.authorization}`);
-  next();
-});
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -39,12 +31,10 @@ app.use('/api/analysis', technicalAnalysisRoutes);
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-    logger.error('Global error handler:');
     logger.error(err.stack);
     res.status(500).json({
         success: false,
-        error: 'Internal server error',
-        message: err.message
+        error: 'Internal server error'
     });
 });
 

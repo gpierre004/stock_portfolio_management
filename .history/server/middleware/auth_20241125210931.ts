@@ -7,18 +7,6 @@ interface JwtPayload {
   email: string;
 }
 
-// Extend Express Request type
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        id: number;
-        email: string;
-      };
-    }
-  }
-}
-
 export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers['authorization'];
   logger.info(`Auth header received: ${authHeader}`);

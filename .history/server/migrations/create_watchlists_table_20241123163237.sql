@@ -22,5 +22,5 @@ CREATE TABLE IF NOT EXISTS watchlists (
 -- Create indexes
 CREATE INDEX IF NOT EXISTS idx_watchlists_userid ON watchlists(userid);
 CREATE INDEX IF NOT EXISTS idx_watchlists_dateadded ON watchlists(date_added);
-CREATE INDEX IF NOT EXISTS idx_watchlists_companyticker ON watchlists(ticker);
+CREATE INDEX IF NOT EXISTS idx_watchlists_ticker ON watchlists(ticker);
 CREATE INDEX IF NOT EXISTS idx_watchlists_user_date ON watchlists(userid, date_added);

@@ -42,7 +42,7 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedAccountId, setSelectedAcc
       {/* Content Area */}
       <main className="p-8 space-y-8">
         {/* Portfolio Summary and Transactions */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="flex gap-8">
           <ErrorBoundary>
             <PortfolioSummary accountId={selectedAccountId} />
           </ErrorBoundary>
@@ -53,7 +53,8 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedAccountId, setSelectedAcc
         </div>
 
         {/* Portfolio Optimization */}
-        <div>
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Portfolio Optimization</h2>
           <ErrorBoundary>
             <PortfolioOptimization accountId={selectedAccountId} />
           </ErrorBoundary>

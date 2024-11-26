@@ -3,6 +3,7 @@ import TransactionList from '../components/TransactionList';
 import TransactionForm from '../components/TransactionForm';
 import PortfolioSummary from '../components/PortfolioSummary';
 import PortfolioOptimization from '../components/PortfolioOptimization';
+import TradingSignals from '../components/TradingSignals';
 import AccountSelector from '../components/AccountSelector';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { PlusCircle } from 'lucide-react';
@@ -14,6 +15,7 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ selectedAccountId, setSelectedAccountId }) => {
   const [isFormOpen, setIsFormOpen] = React.useState(false);
+  const [selectedTicker, setSelectedTicker] = React.useState<string>('');
 
   return (
     <>
@@ -42,9 +44,12 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedAccountId, setSelectedAcc
       {/* Content Area */}
       <main className="p-8 space-y-8">
         {/* Portfolio Summary and Transactions */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="flex gap-8">
           <ErrorBoundary>
-            <PortfolioSummary accountId={selectedAccountId} />
+            <PortfolioSummary 
+              accountId={selectedAccountId} 
+              onTickerSelect={setSelectedTicker}
+            />
           </ErrorBoundary>
 
           <ErrorBoundary>
@@ -52,10 +57,24 @@ const Dashboard: React.FC<DashboardProps> = ({ selectedAccountId, setSelectedAcc
           </ErrorBoundary>
         </div>
 
-        {/* Portfolio Optimization */}
-        <div>
+        {/* Trading Signals and Portfolio Optimization */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Trading Signals */}
+          {selectedTicker && (
+            <ErrorBoundary>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Trading Signals</h2>
+                <TradingSignals ticker={selectedTicker} />
+              </div>
+            </ErrorBoundary>
+          )}
+
+          {/* Portfolio Optimization */}
           <ErrorBoundary>
-            <PortfolioOptimization accountId={selectedAccountId} />
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Portfolio Optimization</h2>
+              <PortfolioOptimization accountId={selectedAccountId} />
+            </div>
           </ErrorBoundary>
         </div>
       </main>

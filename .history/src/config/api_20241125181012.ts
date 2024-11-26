@@ -13,23 +13,17 @@ export const ENDPOINTS = {
     REBALANCE: `${API_BASE_URL}/portfolio/optimization/rebalance`,
     SCENARIO: `${API_BASE_URL}/portfolio/optimization/scenario`,
     DIVIDENDS: `${API_BASE_URL}/portfolio/optimization/dividends`
-  },
-  TECHNICAL_ANALYSIS: {
-    SIGNALS: `${API_BASE_URL}/analysis/signals`,
-    INDICATORS: {
-      RSI: `${API_BASE_URL}/analysis/indicators/rsi`,
-      MACD: `${API_BASE_URL}/analysis/indicators/macd`,
-      MA: `${API_BASE_URL}/analysis/indicators/ma`,
-      VOLUME: `${API_BASE_URL}/analysis/indicators/volume`
-    }
   }
 };
 
-// Create axios instance with default config
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    // Add the JWT token if available
+    ...(localStorage.getItem('token') && {
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    })
   }
 });
 
@@ -37,8 +31,8 @@ const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 || error.response?.status === 403) {
-      // Clear token and redirect to login on auth errors
+    if (error.response?.status === 401) {
+      // Handle token expiration - redirect to login or refresh token
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';
@@ -53,6 +47,7 @@ api.interceptors.request.use(
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log('Token added to request:', token); // Debugging line
     }
     return config;
   },
