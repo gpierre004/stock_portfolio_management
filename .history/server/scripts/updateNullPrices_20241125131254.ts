@@ -1,4 +1,4 @@
-import { updateStockPrices } from '../utils/stockPriceUpdater';
+import { updatestock_prices } from '../utils/stockPriceUpdater';
 import pool from '../config/database';
 
 async function main() {
@@ -10,7 +10,7 @@ async function main() {
         console.log('Updating prices for tickers:', tickers);
         
         // Update stock prices for these tickers
-        await updateStockPrices(tickers);
+        await updatestock_prices(tickers);
         
         console.log('Successfully updated prices');
         process.exit(0);

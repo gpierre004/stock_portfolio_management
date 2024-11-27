@@ -32,7 +32,7 @@ async function cleanupOldData(fiveYearsAgo) {
     }
 }
 
-async function updateStockPrices() {
+async function updatestock_prices() {
     try {
         // Get all company tickers
         const companies = await Company.findAll({
@@ -81,7 +81,7 @@ async function updateStockPrices() {
 
 // If running directly
 if (require.main === module) {
-    updateStockPrices()
+    updatestock_prices()
         .then(() => process.exit(0))
         .catch(error => {
             logger.error(error);
@@ -89,4 +89,4 @@ if (require.main === module) {
         });
 }
 
-module.exports = { updateStockPrices };
+module.exports = { updatestock_prices };

@@ -23,7 +23,7 @@ async function updateNullCurrentPrices() {
     }
 }
 
-async function updateStockPrices(symbols?: string | string[]) {
+async function updatestock_prices(symbols?: string | string[]) {
     try {
         // If no symbols provided, fetch all symbols from the database
         if (!symbols) {
@@ -99,7 +99,7 @@ async function updateStockPrices(symbols?: string | string[]) {
         // Update any remaining null current_prices
         await updateNullCurrentPrices();
     } catch (error) {
-        logger.error('Error in updateStockPrices:', error);
+        logger.error('Error in updatestock_prices:', error);
         throw error;
     }
 }
@@ -173,7 +173,7 @@ async function getHistoricalData(symbol: string, startDate: Date, endDate: Date)
 }
 
 export {
-    updateStockPrices,
+    updatestock_prices,
     getHistoricalData,
     updateNullCurrentPrices
 };

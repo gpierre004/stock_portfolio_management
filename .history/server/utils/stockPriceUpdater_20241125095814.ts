@@ -5,7 +5,7 @@ import StockPriceModel from '../models/StockPrice';
 
 const StockPrice = StockPriceModel(sequelize);
 
-export async function updateStockPrices(symbols: string[]): Promise<void> {
+export async function updatestock_prices(symbols: string[]): Promise<void> {
     try {
         for (const symbol of symbols) {
             try {
@@ -31,7 +31,7 @@ export async function updateStockPrices(symbols: string[]): Promise<void> {
             }
         }
     } catch (error) {
-        logger.error('Error in updateStockPrices:', error);
+        logger.error('Error in updatestock_prices:', error);
         throw error;
     }
 }

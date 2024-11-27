@@ -83,8 +83,8 @@ async function getPotentialStocks() {
         [Sequelize.fn('MAX', Sequelize.col('high')), '52WeekHigh'],
         [Sequelize.fn('AVG', Sequelize.col('close')), 'avgClose'],
         [Sequelize.fn('AVG', Sequelize.col('volume')), 'avgVolume'],
-        [Sequelize.literal('(SELECT close FROM "StockPrices" sp WHERE sp."ticker" = "StockPrice"."ticker" ORDER BY date DESC LIMIT 1)'), 'currentPrice'],
-        [Sequelize.literal('(SELECT volume FROM "StockPrices" sp WHERE sp."ticker" = "StockPrice"."ticker" ORDER BY date DESC LIMIT 1)'), 'currentVolume'],
+        [Sequelize.literal('(SELECT close FROM "stock_prices" sp WHERE sp."ticker" = "StockPrice"."ticker" ORDER BY date DESC LIMIT 1)'), 'currentPrice'],
+        [Sequelize.literal('(SELECT volume FROM "stock_prices" sp WHERE sp."ticker" = "StockPrice"."ticker" ORDER BY date DESC LIMIT 1)'), 'currentVolume'],
       ],
       include: [{ 
         model: Company,
@@ -96,23 +96,23 @@ async function getPotentialStocks() {
       group: ['ticker', 'Company.ticker', 'Company.name', 'Company.sector', 'Company.industry'],
       having: Sequelize.and(
         Sequelize.literal(`
-          (SELECT close FROM "StockPrices" sp WHERE sp."ticker" = "StockPrice"."ticker" ORDER BY date DESC LIMIT 1) 
+          (SELECT close FROM "stock_prices" sp WHERE sp."ticker" = "StockPrice"."ticker" ORDER BY date DESC LIMIT 1) 
           <= (1 - 0.25) * MAX("StockPrice"."high")
         `),
         Sequelize.literal(`
-          (SELECT close FROM "StockPrices" sp WHERE sp."ticker" = "StockPrice"."ticker" ORDER BY date DESC LIMIT 1) 
+          (SELECT close FROM "stock_prices" sp WHERE sp."ticker" = "StockPrice"."ticker" ORDER BY date DESC LIMIT 1) 
           >= 0.70 * MAX("StockPrice"."high")
         `),
         Sequelize.literal(`
-          (SELECT volume FROM "StockPrices" sp WHERE sp."ticker" = "StockPrice"."ticker" ORDER BY date DESC LIMIT 1)
+          (SELECT volume FROM "stock_prices" sp WHERE sp."ticker" = "StockPrice"."ticker" ORDER BY date DESC LIMIT 1)
           >= 1.5 * AVG("StockPrice"."volume")
         `),
         Sequelize.literal(`
-          (SELECT close FROM "StockPrices" sp WHERE sp."ticker" = "StockPrice"."ticker" ORDER BY date DESC LIMIT 1) 
+          (SELECT close FROM "stock_prices" sp WHERE sp."ticker" = "StockPrice"."ticker" ORDER BY date DESC LIMIT 1) 
           > 85
         `)
       ),
-      order: [[Sequelize.literal('MAX("StockPrice"."high") - (SELECT close FROM "StockPrices" sp WHERE sp."ticker" = "StockPrice"."ticker" ORDER BY date DESC LIMIT 1)'), 'DESC']]
+      order: [[Sequelize.literal('MAX("StockPrice"."high") - (SELECT close FROM "stock_prices" sp WHERE sp."ticker" = "StockPrice"."ticker" ORDER BY date DESC LIMIT 1)'), 'DESC']]
     });
 
     logger.info(`Found ${potentialStocks.length} potential stocks`);

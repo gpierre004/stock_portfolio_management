@@ -2,7 +2,7 @@ import yahooFinance from 'yahoo-finance2';
 import logger from './logger';
 import pool from '../config/database';
 
-export async function updateStockPrices(symbols?: string[]): Promise<void> {
+export async function updatestock_prices(symbols?: string[]): Promise<void> {
     try {
         // If no symbols provided, fetch all symbols from the database
         if (!symbols) {
@@ -61,7 +61,7 @@ export async function updateStockPrices(symbols?: string[]): Promise<void> {
             }
         }
     } catch (error) {
-        logger.error('Error in updateStockPrices:', error);
+        logger.error('Error in updatestock_prices:', error);
         throw error;
     }
 }

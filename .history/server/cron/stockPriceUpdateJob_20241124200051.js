@@ -1,5 +1,5 @@
 const cron = require('node-cron');
-const { updateStockPrices } = require('../utils/stockPriceUpdater');
+const { updatestock_prices } = require('../utils/stockPriceUpdater');
 const logger = require('../utils/logger');
 
 // Function to check if it's market hours (9:30 AM - 4:00 PM ET, Monday-Friday)
@@ -29,7 +29,7 @@ cron.schedule('*/5 * * * *', async () => {
         }
 
         logger.info('Starting scheduled stock price update');
-        await updateStockPrices();
+        await updatestock_prices();
         logger.info('Completed scheduled stock price update');
     } catch (error) {
         logger.error(`Error in scheduled stock price update: ${error.message}`);

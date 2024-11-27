@@ -2,7 +2,7 @@ const yahooFinance = require('yahoo-finance2');
 const logger = require('./logger');
 const pool = require('../config/database');
 
-async function updateStockPrices(symbols) {
+async function updatestock_prices(symbols) {
     try {
         // If no symbols provided, fetch all symbols from the database
         if (!symbols) {
@@ -75,7 +75,7 @@ async function updateStockPrices(symbols) {
             }
         }
     } catch (error) {
-        logger.error('Error in updateStockPrices:', error);
+        logger.error('Error in updatestock_prices:', error);
         throw error;
     }
 }
@@ -146,6 +146,6 @@ async function getHistoricalData(symbol, startDate, endDate) {
 }
 
 module.exports = {
-    updateStockPrices,
+    updatestock_prices,
     getHistoricalData
 };

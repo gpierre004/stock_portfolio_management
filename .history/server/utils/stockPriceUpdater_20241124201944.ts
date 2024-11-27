@@ -63,7 +63,7 @@ async function updateWatchlistMetrics(ticker: string) {
         const oneYearAgo = new Date();
         oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
 
-        const stockPrices = await StockPrice.findAll({
+        const stock_prices = await StockPrice.findAll({
             where: {
                 ticker,
                 date: {
@@ -73,16 +73,16 @@ async function updateWatchlistMetrics(ticker: string) {
             order: [['date', 'DESC']]
         });
 
-        if (stockPrices.length === 0) {
+        if (stock_prices.length === 0) {
             logger.warn(`No recent stock prices found for ${ticker}`);
             return;
         }
 
         // Calculate metrics
-        const currentPrice = stockPrices[0].close;
-        const weekHigh52 = Math.max(...stockPrices.map(price => price.high));
+        const currentPrice = stock_prices[0].close;
+        const weekHigh52 = Math.max(...stock_prices.map(price => price.high));
         const percentBelow52WeekHigh = ((weekHigh52 - currentPrice) / weekHigh52) * 100;
-        const avgClose = stockPrices.reduce((sum, price) => sum + price.close, 0) / stockPrices.length;
+        const avgClose = stock_prices.reduce((sum, price) => sum + price.close, 0) / stock_prices.length;
 
         // Update all watchlist entries for this ticker
         const watchlistEntries = await WatchList.findAll({
@@ -108,7 +108,7 @@ async function updateWatchlistMetrics(ticker: string) {
     }
 }
 
-export async function updateStockPrices() {
+export async function updatestock_prices() {
     try {
         // Get all company tickers
         const companies = await Company.findAll({
@@ -159,7 +159,7 @@ export async function updateStockPrices() {
 
 // If running directly
 if (process.argv[1] === import.meta.url) {
-    updateStockPrices()
+    updatestock_prices()
         .then(() => process.exit(0))
         .catch(error => {
             logger.error(error);
@@ -168,5 +168,5 @@ if (process.argv[1] === import.meta.url) {
 }
 
 export default {
-    updateStockPrices
+    updatestock_prices
 };

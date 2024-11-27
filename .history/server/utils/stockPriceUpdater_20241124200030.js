@@ -17,7 +17,7 @@ async function fetchHistoricalData(ticker, startDate) {
     }
 }
 
-async function updateStockPrices() {
+async function updatestock_prices() {
     try {
         // Get all company tickers
         const companies = await Company.findAll({
@@ -33,7 +33,7 @@ async function updateStockPrices() {
             if (!historicalData) continue;
 
             // Bulk upsert the stock prices
-            const stockPrices = historicalData.map(data => ({
+            const stock_prices = historicalData.map(data => ({
                 ticker: company.ticker,
                 date: data.date,
                 open: data.open,
@@ -46,7 +46,7 @@ async function updateStockPrices() {
                 updatedAt: new Date()
             }));
 
-            await StockPrice.bulkCreate(stockPrices, {
+            await StockPrice.bulkCreate(stock_prices, {
                 updateOnDuplicate: [
                     'open', 'high', 'low', 'close', 
                     'volume', 'adjustedClose', 'updatedAt'
@@ -65,7 +65,7 @@ async function updateStockPrices() {
 
 // If running directly
 if (require.main === module) {
-    updateStockPrices()
+    updatestock_prices()
         .then(() => process.exit(0))
         .catch(error => {
             logger.error(error);
@@ -73,4 +73,4 @@ if (require.main === module) {
         });
 }
 
-module.exports = { updateStockPrices };
+module.exports = { updatestock_prices };
